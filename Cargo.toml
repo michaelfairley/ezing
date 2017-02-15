@@ -1,0 +1,7 @@
+[package]
+name = "ezing"
+version = "0.1.0"
+authors = ["Michael Fairley <michaelfairley@gmail.com>"]
+
+[dev-dependencies]
+approx = "*"
