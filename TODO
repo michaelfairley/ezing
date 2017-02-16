@@ -2,3 +2,6 @@ readme
 docs
 example
 stable tests
+coverage
+crates.io
+clippy
