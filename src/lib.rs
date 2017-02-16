@@ -212,7 +212,7 @@ pub fn back_inout(t: f32) -> f32 {
   }
 }
 
-//
+// Bounce
 
 #[inline]
 pub fn bounce_in(t: f32) -> f32 {
