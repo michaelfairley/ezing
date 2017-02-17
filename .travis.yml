@@ -5,18 +5,25 @@ rust:
   - stable
   - 1.0.0
 
+script:
+  - |
+      travis-cargo build &&
+      travis-cargo --skip 1.0.0 build -- --example display &&
+      travis-cargo --only nightly test &&
+      travis-cargo --only nightly --no-sudo coverage
+
+env:
+  global:
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+
 before_script:
   - |
       pip install 'travis-cargo<0.2' --user &&
       export PATH=$HOME/.local/bin:$PATH
 
-script:
-  - |
-      travis-cargo build &&
-      travis-cargo build -- --example display &&
-      travis-cargo --only nightly test &&
-      travis-cargo --only nightly coverage
-
-env:
-  global:
-    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
