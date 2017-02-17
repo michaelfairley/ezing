@@ -13,7 +13,7 @@ before_script:
 script:
   - |
       travis-cargo build &&
-      travis-cargo build --example display &&
+      travis-cargo build -- --example display &&
       travis-cargo --only nightly test &&
       travis-cargo --only nightly coverage
 
