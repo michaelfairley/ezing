@@ -5,3 +5,6 @@ authors = ["Michael Fairley <michaelfairley@gmail.com>"]
 
 [dev-dependencies]
 approx = "*"
+glium = "*"
+glium_text = "*"
+glutin = "*"
