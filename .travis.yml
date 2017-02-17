@@ -16,3 +16,7 @@ script:
       travis-cargo build --example display &&
       travis-cargo --only nightly test &&
       travis-cargo --only nightly coverage
+
+env:
+  global:
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=
