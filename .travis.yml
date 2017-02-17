@@ -24,7 +24,7 @@ script:
       travis-cargo build &&
       travis-cargo build -- --example display &&
       travis-cargo --only nightly test &&
-      travis-cargo --only nightly --no-sudo coverage
+      travis-cargo --only nightly coverage --no-sudo
 
 env:
   global:
