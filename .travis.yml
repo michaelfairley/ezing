@@ -9,8 +9,7 @@ script:
   - |
       travis-cargo build &&
       travis-cargo --only stable build -- --example display &&
-      travis-cargo --only nightly test &&
-      travis-cargo --only nightly coveralls --no-sudo
+      travis-cargo --only nightly test
 
 env:
   global:
