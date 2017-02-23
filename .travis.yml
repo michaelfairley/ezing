@@ -8,7 +8,7 @@ rust:
 script:
   - |
       travis-cargo build &&
-      travis-cargo --only stable build -- --example display &&
+      travis-cargo --only stable build -- --example demo &&
       travis-cargo --only nightly test
 
 env:
