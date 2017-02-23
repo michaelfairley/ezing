@@ -12,7 +12,7 @@ struct Vertex {
 }
 implement_vertex!(Vertex, position);
 
-const FNS: [(&str, [fn(f32) -> f32; 3]); 10] = [
+const FNS: [(&'static str, [fn(f32) -> f32; 3]); 10] = [
   ("quad", [ezing::quad_in, ezing::quad_out, ezing::quad_inout]),
   ("cubic", [ezing::cubic_in, ezing::cubic_out, ezing::cubic_inout]),
   ("quart", [ezing::quart_in, ezing::quart_out, ezing::quart_inout]),
