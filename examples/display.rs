@@ -1,7 +1,10 @@
 #[macro_use]
 extern crate glium;
+extern crate glium_text;
 extern crate glutin;
 extern crate ezing;
+
+use glium_text::{FontTexture,TextSystem,TextDisplay,draw};
 
 #[derive(Copy, Clone)]
 struct Vertex {
@@ -9,34 +12,36 @@ struct Vertex {
 }
 implement_vertex!(Vertex, position);
 
-fn draw_lines() -> Vec<Vertex> {
+const FNS: [(&str, [fn(f32) -> f32; 3]); 10] = [
+  ("quad", [ezing::quad_in, ezing::quad_out, ezing::quad_inout]),
+  ("cubic", [ezing::cubic_in, ezing::cubic_out, ezing::cubic_inout]),
+  ("quart", [ezing::quart_in, ezing::quart_out, ezing::quart_inout]),
+  ("quint", [ezing::quint_in, ezing::quint_out, ezing::quint_inout]),
+  ("sine", [ezing::sine_in, ezing::sine_out, ezing::sine_inout]),
+  ("circ", [ezing::circ_in, ezing::circ_out, ezing::circ_inout]),
+  ("expo", [ezing::expo_in, ezing::expo_out, ezing::expo_inout]),
+  ("elastic", [ezing::elastic_in, ezing::elastic_out, ezing::elastic_inout]),
+  ("back", [ezing::back_in, ezing::back_out, ezing::back_inout]),
+  ("bounce", [ezing::bounce_in, ezing::bounce_out, ezing::bounce_inout]),
+];
+
+
+fn build_lines() -> Vec<Vertex> {
   let vpad = 0.02;
   let hpad = 0.02;
-  let stroke = 0.01;
+  let lpad = 0.1;
+  let stroke = 0.015;
 
-  let fns = &[
-    ("quad", [ezing::quad_in, ezing::quad_out, ezing::quad_inout]),
-    ("cubic", [ezing::cubic_in, ezing::cubic_out, ezing::cubic_inout]),
-    ("quart", [ezing::quart_in, ezing::quart_out, ezing::quart_inout]),
-    ("quint", [ezing::quint_in, ezing::quint_out, ezing::quint_inout]),
-    ("sine", [ezing::sine_in, ezing::sine_out, ezing::sine_inout]),
-    ("circ", [ezing::circ_in, ezing::circ_out, ezing::circ_inout]),
-    ("expo", [ezing::expo_in, ezing::expo_out, ezing::expo_inout]),
-    ("elastic", [ezing::elastic_in, ezing::elastic_out, ezing::elastic_inout]),
-    ("back", [ezing::back_in, ezing::back_out, ezing::back_inout]),
-    ("bounce", [ezing::bounce_in, ezing::bounce_out, ezing::bounce_inout]),
-  ];
-
-  let width = (1.0 - 4.0 * hpad) / 3.0;
-  let height = (1.0 - ((fns.len() + 1) as f32 * vpad)) / fns.len() as f32;
+  let width = (1.0 - lpad - 4.0 * hpad) / 3.0;
+  let height = (1.0 - ((FNS.len() + 1) as f32 * vpad)) / FNS.len() as f32;
 
   let mut vertices = vec![];
 
-  for (i, row) in fns.iter().enumerate() {
+  for (i, row) in FNS.iter().enumerate() {
     let top = (height + vpad) * i as f32 + vpad;
 
     for (j, func) in row.1.iter().enumerate() {
-      let left = (width + hpad) * j as f32 + hpad;
+      let left = (width + hpad) * j as f32 + hpad + lpad;
 
       let vertex = |x: f32, y: f32| -> Vertex {
         Vertex{ position: [x * width + left, (1.0 - y) * height + top] }
@@ -63,8 +68,31 @@ fn draw_lines() -> Vec<Vertex> {
   vertices
 }
 
+fn build_texts<'f>(text_system: &TextSystem,
+                   font: &'f FontTexture)
+                   -> Vec<(TextDisplay<&'f FontTexture>, [[f32; 4]; 4])> {
+  let scale = 0.05;
+
+  FNS.iter().enumerate().map(|(i, &(name, _))| {
+    let text = TextDisplay::new(text_system, font, name);
+
+    let y = i as f32 / FNS.len() as f32 * -2.0 + 1.0;
+    println!("{} {}", name, y);
+
+    let matrix = [
+      [scale, 0.0, 0.0, 0.0],
+      [0.0, scale, 0.0, 0.0],
+      [0.0, 0.0, 1.0, 0.0],
+      [-0.99, y - 0.17, 0.0, 1.0],
+    ];
+
+    (text, matrix)
+  }).collect()
+}
+
 fn main() {
   use glium::DisplayBuild;
+
 
   let display = glium::glutin::WindowBuilder::new()
     .with_dimensions(1024, 768)
@@ -76,7 +104,15 @@ fn main() {
 
   let program = glium::Program::from_source(&display, VERTEX_SHADER, FRAGMENT_SHADER, None).unwrap();
 
-  let vertices = draw_lines();
+  let text_system = TextSystem::new(&display);
+  let font_data: &[u8] = include_bytes!("Slabo27px-Regular.ttf");
+  let font = FontTexture::new(&display, font_data, 70).unwrap();
+  let black = (0.0, 0.0, 0.0, 1.0);
+
+  let lines = build_lines();
+  let vertex_buffer = glium::VertexBuffer::new(&display, &lines).unwrap();
+
+  let texts = build_texts(&text_system, &font);
 
   loop {
     for event in display.poll_events() {
@@ -87,11 +123,13 @@ fn main() {
       }
     }
 
+    let (w, h) = display.get_framebuffer_dimensions();
+    let screen_ration = w as f32 / h as f32;
+
     {
       use glium::Surface;
       let mut target = display.draw();
 
-      let vertex_buffer = glium::VertexBuffer::new(&display, &vertices).unwrap();
       let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
 
       target.clear_color(1.0, 1.0, 1.0, 1.0);
@@ -101,6 +139,13 @@ fn main() {
                   &program,
                   &glium::uniforms::EmptyUniforms,
                   &Default::default()).unwrap();
+
+      for &(ref text, matrix) in &texts {
+        let mut matrix = matrix.clone();
+        matrix[1][1] *= screen_ration;
+
+        draw(&text, &text_system, &mut target, matrix, black);
+      }
 
       target.finish().unwrap();
     }
