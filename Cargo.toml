@@ -2,6 +2,13 @@
 name = "ezing"
 version = "0.1.0"
 authors = ["Michael Fairley <michaelfairley@gmail.com>"]
+description = "Easing functions"
+repository = "https://github.com/michaelfairley/ezing"
+keywords = ["gamedev", "math"]
+license = "MIT"
+
+[badges]
+travis-ci = { repository = "michaelfairley/ezing", branch = "master" }
 
 [dev-dependencies]
 approx = "*"
