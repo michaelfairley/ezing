@@ -6,10 +6,9 @@ rust:
   - 1.10.0
 
 script:
-  - |
-      travis-cargo build &&
-      travis-cargo --only stable build -- --example demo &&
-      travis-cargo --only nightly test
+  - travis-cargo build
+  - travis-cargo --only stable build -- --example demo
+  - travis-cargo --only nightly test
 
 env:
   global:
