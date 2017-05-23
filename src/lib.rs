@@ -1,3 +1,7 @@
+//! Simple easing functions
+//!
+//! All functions have the signature `fn(f32) -> f32`.
+
 #![cfg_attr(test, feature(concat_idents))]
 
 #[cfg(test)]

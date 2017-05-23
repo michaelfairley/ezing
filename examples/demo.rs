@@ -77,7 +77,6 @@ fn build_texts<'f>(text_system: &TextSystem,
     let text = TextDisplay::new(text_system, font, name);
 
     let y = i as f32 / FNS.len() as f32 * -2.0 + 1.0;
-    println!("{} {}", name, y);
 
     let matrix = [
       [scale, 0.0, 0.0, 0.0],
