@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "cargo-clippy", allow(clippy))]
 #[macro_use]
 extern crate glium;
 extern crate glium_text;

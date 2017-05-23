@@ -149,6 +149,8 @@ pub fn expo_in(t: f32) -> f32 {
   }
 }
 
+
+#[cfg_attr(feature = "cargo-clippy", allow(float_cmp))]
 #[inline]
 pub fn expo_out(t: f32) -> f32 {
   if t == 1.0 {
@@ -158,6 +160,7 @@ pub fn expo_out(t: f32) -> f32 {
   }
 }
 
+#[cfg_attr(feature = "cargo-clippy", allow(float_cmp))]
 #[inline]
 pub fn expo_inout(t: f32) -> f32 {
   if t == 0.0 {
