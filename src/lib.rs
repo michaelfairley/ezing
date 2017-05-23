@@ -1,6 +1,6 @@
 //! Simple easing functions
 //!
-//! All functions have the signature `fn(f32) -> f32`.
+//! All functions have the signature `fn(f32) -> f32` and expect input ranging from `0.0` to `1.0`. Output is generally in the `0.0` to `1.0` range (except for `elastic` and `back`, which return values slightly outside). `0.0` always maps to `0.0`, and `1.0` always maps to `1.0`.
 
 #![cfg_attr(test, feature(concat_idents))]
 
