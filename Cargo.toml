@@ -12,6 +12,6 @@ travis-ci = { repository = "michaelfairley/ezing", branch = "master" }
 
 [dev-dependencies]
 approx = "0.1"
-glium = "0.16"
-glium_text = "0.11"
-glutin = "0.7"
+glium = "0.21"
+glium_text = "0.12"
+glutin = "0.14"

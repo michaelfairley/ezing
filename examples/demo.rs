@@ -91,16 +91,17 @@ fn build_texts<'f>(text_system: &TextSystem,
 }
 
 fn main() {
-  use glium::DisplayBuild;
+  // use glium::DisplayBuild;
 
-
-  let display = glium::glutin::WindowBuilder::new()
+  let mut events_loop = glutin::EventsLoop::new();
+  let window = glutin::WindowBuilder::new()
     .with_dimensions(1024, 768)
-    .with_title("ezing demo")
-    .with_vsync()
-    .with_multisampling(8)
-    .build_glium()
-    .unwrap();
+    .with_title("ezing demo");
+  let context = glutin::ContextBuilder::new()
+    .with_vsync(true)
+    .with_multisampling(8);
+
+  let display = glium::Display::new(window, context, &events_loop).unwrap();
 
   let program = glium::Program::from_source(&display, VERTEX_SHADER, FRAGMENT_SHADER, None).unwrap();
 
@@ -115,13 +116,23 @@ fn main() {
   let texts = build_texts(&text_system, &font);
 
   loop {
-    for event in display.poll_events() {
+    let mut closed = false;
+
+    events_loop.poll_events(|event| {
       match event {
-        glium::glutin::Event::Closed
-          | glium::glutin::Event::KeyboardInput(glutin::ElementState::Pressed, _, Some(glutin::VirtualKeyCode::Escape)) => return,
+        glutin::Event::WindowEvent { event, .. } => match event {
+          glutin::WindowEvent::Closed => { closed = true; }
+          glutin::WindowEvent::KeyboardInput{input: glutin::KeyboardInput{ virtual_keycode:Some(glutin::VirtualKeyCode::Escape), .. }, .. } => { closed = true; }
+          _ => (),
+        },
+
+
+        // glutin::Event::Closed
         _ => {},
       }
-    }
+    });
+
+    if closed { return; }
 
     let (w, h) = display.get_framebuffer_dimensions();
     let screen_ration = w as f32 / h as f32;
