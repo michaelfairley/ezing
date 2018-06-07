@@ -9,8 +9,7 @@
 
 [`quad`, `cubic`, `quart`, `quint`, `sine`, `circ`, `expo`, `elastic`, `back`, `bounce`] x [`in`, `out`, `inout`]
 
-All functions have the signature `fn<F: Float>(F) -> F` (letting you use `f32`, `f64`, or any other type that implements [`num_traits::Float`](https://docs.rs/num-traits/0.2.0/num_traits/float/trait.Float.html)). Input should range from `0.0` to `1.0`, and output is generally in the `0.0` to `1.0` range (except for `elastic` and `back`, which return values slightly outside). `0.0` always maps to `0.0`, and `1.0` always maps to `1.0`.
-
+All functions have the signature `fn<F: Float>(F) -> F` (letting you use `f32`, `f64`, or any other type that implements [`num_traits`'s `Float`](https://docs.rs/num-traits/0.2.0/num_traits/float/trait.Float.html)). Input should range from `0.0` to `1.0`, and output is generally in the `0.0` to `1.0` range (except for `elastic` and `back`, which return values slightly outside). `0.0` always maps to `0.0`, and `1.0` always maps to `1.0`.
 Use 'em to lerp or something:
 ```rust
 let current_pos = lerp(ezing::cubic_inout(t), start, end);
