@@ -10,8 +10,10 @@ license = "MIT/Apache-2.0"
 [badges]
 travis-ci = { repository = "michaelfairley/ezing", branch = "master" }
 
+[dependencies]
+num-traits = "0.2"
+
 [dev-dependencies]
-approx = "0.1"
 glium = "0.21"
 glium_text = "0.12"
 glutin = "0.14"

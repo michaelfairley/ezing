@@ -1,295 +1,315 @@
 //! Simple easing functions
 //!
-//! All functions have the signature `fn(f32) -> f32` and expect input ranging from `0.0` to `1.0`. Output is generally in the `0.0` to `1.0` range (except for `elastic` and `back`, which return values slightly outside). `0.0` always maps to `0.0`, and `1.0` always maps to `1.0`.
+//! All functions have the signature `fn<F: Float>(F) -> F` (letting you use `f32`, `f64`, or any other type that implements [`num_traits::Float`](https://docs.rs/num-traits/0.2.0/num_traits/float/trait.Float.html) and expect input ranging from `0.0` to `1.0`. Output is generally in the `0.0` to `1.0` range (except for `elastic` and `back`, which return values slightly outside). `0.0` always maps to `0.0`, and `1.0` always maps to `1.0`.
 
 #![cfg_attr(test, feature(concat_idents))]
 
-#[cfg(test)]
-#[macro_use]
-extern crate approx;
+extern crate num_traits;
+use num_traits::Float;
 
-use std::f32::consts::{PI,FRAC_PI_2};
+use std::f64::consts::{PI,FRAC_PI_2};
+
+fn lit<F: Float>(f: f64) -> F {
+  F::from(f).unwrap()
+}
+
 
 // Quadratic
 
 #[inline]
-pub fn quad_in(t: f32) -> f32 {
+pub fn quad_in<F: Float>(t: F) -> F {
   t * t
 }
 
 #[inline]
-pub fn quad_out(t: f32) -> f32 {
-  -t * (t - 2.0)
+pub fn quad_out<F: Float>(t: F) -> F {
+  -t * (t - lit::<F>(2.0))
 }
 
 #[inline]
-pub fn quad_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    2.0 * t * t
+pub fn quad_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(2.0) * t * t
   } else {
-    (-2.0 * t * t) + (4.0 * t) - 1.0
+    (lit::<F>(-2.0) * t * t) + (lit::<F>(4.0) * t) - lit::<F>(1.0)
   }
 }
 
 // Cubic
 
 #[inline]
-pub fn cubic_in(t: f32) -> f32 {
+pub fn cubic_in<F: Float>(t: F) -> F {
   t * t * t
 }
 
 #[inline]
-pub fn cubic_out(t: f32) -> f32 {
-  let f = t - 1.0;
-  f * f * f + 1.0
+pub fn cubic_out<F: Float>(t: F) -> F {
+  let f = t - lit::<F>(1.0);
+  f * f * f + lit::<F>(1.0)
 }
 
 #[inline]
-pub fn cubic_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    4.0 * t * t * t
+pub fn cubic_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(4.0) * t * t * t
   } else {
-    let f = (2.0 * t) - 2.0;
-    0.5 * f * f * f + 1.0
+    let f = (lit::<F>(2.0) * t) - lit::<F>(2.0);
+    lit::<F>(0.5) * f * f * f + lit::<F>(1.0)
   }
 }
 
 // Quartic
 
 #[inline]
-pub fn quart_in(t: f32) -> f32 {
+pub fn quart_in<F: Float>(t: F) -> F {
   t * t * t * t
 }
 
 #[inline]
-pub fn quart_out(t: f32) -> f32 {
-  let f = t - 1.0;
-  f * f * f * (1.0 - t) + 1.0
+pub fn quart_out<F: Float>(t: F) -> F {
+  let f = t - lit::<F>(1.0);
+  f * f * f * (lit::<F>(1.0) - t) + lit::<F>(1.0)
 }
 
 #[inline]
-pub fn quart_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    8.0 * t * t * t * t
+pub fn quart_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(8.0) * t * t * t * t
   } else {
-    let f = t - 1.0;
-    -8.0 * f * f * f * f + 1.0
+    let f = t - lit::<F>(1.0);
+    lit::<F>(-8.0) * f * f * f * f + lit::<F>(1.0)
   }
 }
 
 // Quintic
 
 #[inline]
-pub fn quint_in(t: f32) -> f32 {
+pub fn quint_in<F: Float>(t: F) -> F {
   t * t * t * t * t
 }
 
 #[inline]
-pub fn quint_out(t: f32) -> f32 {
-  let f = t - 1.0;
-  f * f * f * f * f + 1.0
+pub fn quint_out<F: Float>(t: F) -> F {
+  let f = t - lit::<F>(1.0);
+  f * f * f * f * f + lit::<F>(1.0)
 }
 
 #[inline]
-pub fn quint_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    16.0 * t * t * t * t * t
+pub fn quint_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(16.0) * t * t * t * t * t
   } else {
-    let f = (2.0 * t) - 2.0;
-    0.5 * f * f * f * f * f + 1.0
+    let f = (lit::<F>(2.0) * t) - lit::<F>(2.0);
+    lit::<F>(0.5) * f * f * f * f * f + lit::<F>(1.0)
   }
 }
 
 // Sine
 
 #[inline]
-pub fn sine_in(t: f32) -> f32 {
-  ((t - 1.0) * FRAC_PI_2).sin() + 1.0
+pub fn sine_in<F: Float>(t: F) -> F {
+  ((t - lit::<F>(1.0)) * lit::<F>(FRAC_PI_2)).sin() + lit::<F>(1.0)
 }
 
 #[inline]
-pub fn sine_out(t: f32) -> f32 {
-  (t * FRAC_PI_2).sin()
+pub fn sine_out<F: Float>(t: F) -> F {
+  (t * lit::<F>(FRAC_PI_2)).sin()
 }
 
 #[inline]
-pub fn sine_inout(t: f32) -> f32 {
-  0.5 * (1.0 - (t * PI).cos())
+pub fn sine_inout<F: Float>(t: F) -> F {
+  lit::<F>(0.5) * (lit::<F>(1.0) - (t * lit::<F>(PI)).cos())
 }
 
 // Circular
 
 #[inline]
-pub fn circ_in(t: f32) -> f32 {
-  1.0 - (1.0 - t * t).sqrt()
+pub fn circ_in<F: Float>(t: F) -> F {
+  lit::<F>(1.0) - (lit::<F>(1.0) - t * t).sqrt()
 }
 
 #[inline]
-pub fn circ_out(t: f32) -> f32 {
-  ((2.0 - t) * t).sqrt()
+pub fn circ_out<F: Float>(t: F) -> F {
+  ((lit::<F>(2.0) - t) * t).sqrt()
 }
 
 #[inline]
-pub fn circ_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    0.5 * (1.0 - (1.0 - 4.0 * t * t).sqrt())
+pub fn circ_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(0.5) * (lit::<F>(1.0) - (lit::<F>(1.0) - lit::<F>(4.0) * t * t).sqrt())
   } else {
-    0.5 * ((-(2.0 * t - 3.0) * (2.0 * t - 1.0)).sqrt() + 1.0)
+    lit::<F>(0.5) * ((-(lit::<F>(2.0) * t - lit::<F>(3.0)) * (lit::<F>(2.0) * t - lit::<F>(1.0))).sqrt() + lit::<F>(1.0))
   }
 }
 
 // Exponential
 
 #[inline]
-pub fn expo_in(t: f32) -> f32 {
-  if t == 0.0 {
-    0.0
+pub fn expo_in<F: Float>(t: F) -> F {
+  if t == lit::<F>(0.0) {
+    lit::<F>(0.0)
   } else {
-    (2.0f32).powf(10.0 * (t - 1.0))
+    lit::<F>(2.0).powf(lit::<F>(10.0) * (t - lit::<F>(1.0)))
   }
 }
 
 
 #[cfg_attr(feature = "cargo-clippy", allow(float_cmp))]
 #[inline]
-pub fn expo_out(t: f32) -> f32 {
-  if t == 1.0 {
-    1.0
+pub fn expo_out<F: Float>(t: F) -> F {
+  if t == lit::<F>(1.0) {
+    lit::<F>(1.0)
   } else {
-    1.0 - (2.0f32).powf(-10.0 * t)
+    lit::<F>(1.0) - lit::<F>(2.0).powf(lit::<F>(-10.0) * t)
   }
 }
 
 #[cfg_attr(feature = "cargo-clippy", allow(float_cmp))]
 #[inline]
-pub fn expo_inout(t: f32) -> f32 {
-  if t == 0.0 {
-    0.0
-  } else if t == 1.0 {
-    1.0
-  } else if t < 0.5 {
-    0.5 * (2.0f32).powf(20.0 * t - 10.0)
+pub fn expo_inout<F: Float>(t: F) -> F {
+  if t == lit::<F>(0.0) {
+    lit::<F>(0.0)
+  } else if t == lit::<F>(1.0) {
+    lit::<F>(1.0)
+  } else if t < lit::<F>(0.5) {
+    lit::<F>(0.5) * lit::<F>(2.0).powf(lit::<F>(20.0) * t - lit::<F>(10.0))
   } else {
-    -0.5 * (2.0f32).powf(-20.0 * t + 10.0) + 1.0
+    lit::<F>(-0.5) * lit::<F>(2.0).powf(lit::<F>(-20.0) * t + lit::<F>(10.0)) + lit::<F>(1.0)
   }
 }
 
 // Elastic
 
 #[inline]
-pub fn elastic_in(t: f32) -> f32 {
-  (13.0 * FRAC_PI_2 * t).sin() * (2.0f32).powf(10.0 * (t - 1.0))
+pub fn elastic_in<F: Float>(t: F) -> F {
+  (lit::<F>(13.0) * lit::<F>(FRAC_PI_2) * t).sin() * lit::<F>(2.0).powf(lit::<F>(10.0) * (t - lit::<F>(1.0)))
 }
 
 #[inline]
-pub fn elastic_out(t: f32) -> f32 {
-  (-13.0 * FRAC_PI_2 * (t + 1.0)).sin() * (2.0f32).powf(-10.0 * t) + 1.0
+pub fn elastic_out<F: Float>(t: F) -> F {
+  (lit::<F>(-13.0) * lit::<F>(FRAC_PI_2) * (t + lit::<F>(1.0))).sin() * lit::<F>(2.0).powf(lit::<F>(-10.0) * t) + lit::<F>(1.0)
 }
 
 #[inline]
-pub fn elastic_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    0.5 * (13.0 * FRAC_PI_2 * 2.0 * t).sin() * (2.0f32).powf(10.0 * (2.0 * t - 1.0))
+pub fn elastic_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(0.5) * (lit::<F>(13.0) * lit::<F>(FRAC_PI_2) * lit::<F>(2.0) * t).sin() * lit::<F>(2.0).powf(lit::<F>(10.0) * (lit::<F>(2.0) * t - lit::<F>(1.0)))
   } else {
-    0.5 * ((-13.0 * FRAC_PI_2 * 2.0 * t).sin() * (2.0f32).powf(-10.0 * (2.0 * t - 1.0)) + 2.0)
+    lit::<F>(0.5) * ((lit::<F>(-13.0) * lit::<F>(FRAC_PI_2) * lit::<F>(2.0) * t).sin() * (lit::<F>(2.0)).powf(lit::<F>(-10.0) * (lit::<F>(2.0) * t - lit::<F>(1.0))) + lit::<F>(2.0))
   }
 }
 
 // Back
 
 #[inline]
-pub fn back_in(t: f32) -> f32 {
-  t * t * t - t * (t * PI).sin()
+pub fn back_in<F: Float>(t: F) -> F {
+  t * t * t - t * (t * lit::<F>(PI)).sin()
 }
 
 #[inline]
-pub fn back_out(t: f32) -> f32 {
-  let f = 1.0 - t;
-  1.0 - f * f * f + f * (f * PI).sin()
+pub fn back_out<F: Float>(t: F) -> F {
+  let f = lit::<F>(1.0) - t;
+  lit::<F>(1.0) - f * f * f + f * (f * lit::<F>(PI)).sin()
 }
 
 #[inline]
-pub fn back_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    let f = 2.0 * t;
-    0.5 * (f * f * f - f * (f * PI).sin())
+pub fn back_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    let f = lit::<F>(2.0) * t;
+    lit::<F>(0.5) * (f * f * f - f * (f * lit::<F>(PI)).sin())
   } else {
-    let f = 2.0 - 2.0 * t;
-    0.5 * (1.0 - (f * f * f - f * (f * PI).sin())) + 0.5
+    let f = lit::<F>(2.0) - lit::<F>(2.0) * t;
+    lit::<F>(0.5) * (lit::<F>(1.0) - (f * f * f - f * (f * lit::<F>(PI)).sin())) + lit::<F>(0.5)
   }
 }
 
 // Bounce
 
 #[inline]
-pub fn bounce_in(t: f32) -> f32 {
-  1.0 - bounce_out(1.0 - t)
+pub fn bounce_in<F: Float>(t: F) -> F {
+  lit::<F>(1.0) - bounce_out(lit::<F>(1.0) - t)
 }
 
 #[inline]
-pub fn bounce_out(t: f32) -> f32 {
-  if t < 4.0 / 11.0 {
-    121.0 / 16.0 * t * t
-  } else if t < 8.0 / 11.0 {
-    363.0 / 40.0 * t * t - 99.0 / 10.0 * t+ 17.0 / 5.0
-  } else if t < 9.0 / 10.0 {
-    4356.0 / 361.0 * t * t - 35442.0 / 1805.0 * t + 16061.0 / 1805.0
+pub fn bounce_out<F: Float>(t: F) -> F {
+  if t < lit::<F>(4.0 / 11.0) {
+    lit::<F>(121.0 / 16.0) * t * t
+  } else if t < lit::<F>(8.0 / 11.0) {
+    lit::<F>(363.0 / 40.0) * t * t - lit::<F>(99.0 / 10.0) * t + lit::<F>(17.0 / 5.0)
+  } else if t < lit::<F>(9.0 / 10.0) {
+    lit::<F>(4356.0 / 361.0) * t * t - lit::<F>(35442.0 / 1805.0) * t + lit::<F>(16061.0 / 1805.0)
   } else {
-    54.0 / 5.0 * t * t - 513.0 / 25.0 * t + 268.0 / 25.0
+    lit::<F>(54.0 / 5.0) * t * t - lit::<F>(513.0 / 25.0) * t + lit::<F>(268.0 / 25.0)
   }
 }
 
 #[inline]
-pub fn bounce_inout(t: f32) -> f32 {
-  if t < 0.5 {
-    0.5 * bounce_in(t * 2.0)
+pub fn bounce_inout<F: Float>(t: F) -> F {
+  if t < lit::<F>(0.5) {
+    lit::<F>(0.5) * bounce_in(t * lit::<F>(2.0))
   } else {
-    0.5 * bounce_out(t * 2.0 - 1.0) + 0.5
+    lit::<F>(0.5) * bounce_out(t * lit::<F>(2.0) - lit::<F>(1.0)) + lit::<F>(0.5)
   }
 }
 
 
 #[cfg(test)]
 mod tests {
+  use num_traits::Float;
+  use super::lit;
+
+  fn assert_float_eq<A: Float, B: Float>(a: A, b: B) {
+    let a = a.to_f64().unwrap();
+    let b = b.to_f64().unwrap();
+
+    assert!(a - b < 0.00001, "a = {}, b = {}", a, b);
+  }
+
   macro_rules! tests {
     ($name:ident) => {
       mod $name{
         use super::*;
         use super::super::*;
 
-        #[test] fn in_() { test(concat_idents!($name, _in)); }
-        #[test] fn out() { test(concat_idents!($name, _out)); }
-        #[test] fn inout() { test(concat_idents!($name, _inout)); }
-        #[test] fn trio() { test_trio(concat_idents!($name, _in),
-                                      concat_idents!($name, _out),
-                                      concat_idents!($name, _inout)); }
+        #[test] fn in32() { test::<f32, _>(concat_idents!($name, _in)); }
+        #[test] fn in64() { test::<f64, _>(concat_idents!($name, _in)); }
+        #[test] fn out32() { test::<f32, _>(concat_idents!($name, _out)); }
+        #[test] fn out64() { test::<f64, _>(concat_idents!($name, _out)); }
+        #[test] fn inout32() { test::<f32, _>(concat_idents!($name, _inout)); }
+        #[test] fn inout64() { test::<f64, _>(concat_idents!($name, _inout)); }
+        #[test] fn trio32() { test_trio::<f32, _, _, _>(concat_idents!($name, _in),
+                                                        concat_idents!($name, _out),
+                                                        concat_idents!($name, _inout)); }
+        #[test] fn trio64() { test_trio::<f64, _, _, _>(concat_idents!($name, _in),
+                                                        concat_idents!($name, _out),
+                                                        concat_idents!($name, _inout)); }
       }
     }
   }
 
-  fn test<F>(f: F)
-    where F: Fn(f32) -> f32 {
-    assert_relative_eq!(f(0.0), 0.0);
-    assert_relative_eq!(f(1.0), 1.0);
+  fn test<T: Float, F>(f: F)
+    where F: Fn(T) -> T {
+    assert_float_eq(f(lit::<T>(0.0)), 0.0);
+    assert_float_eq(f(lit::<T>(1.0)), 1.0);
   }
 
-  fn test_trio<FIN, FOUT, FINOUT>(fin: FIN, fout: FOUT, finout: FINOUT)
-    where FIN: Fn(f32) -> f32,
-          FOUT: Fn(f32) -> f32,
-          FINOUT: Fn(f32) -> f32 {
+  fn test_trio<T: Float, FIN, FOUT, FINOUT>(fin: FIN, fout: FOUT, finout: FINOUT)
+    where FIN: Fn(T) -> T,
+          FOUT: Fn(T) -> T,
+          FINOUT: Fn(T) -> T {
 
     let n = 99;
 
     for i in 0..n+1 {
-      let t = i as f32 / n as f32;
-      println!("{}", t);
+      let t = T::from(i).unwrap() / T::from(n).unwrap();
+      println!("{}", t.to_f32().unwrap());
 
-      assert_relative_eq!(fin(t), 1.0 - (fout(1.0 - t)), epsilon = 0.00001);
+      assert_float_eq::<T, T>(fin(t), lit::<T>(1.0) - (fout(lit::<T>(1.0) - t)));
 
-      if t < 0.5 {
-        assert_relative_eq!(finout(t), fin(t*2.0) / 2.0);
+      if t < lit(0.5) {
+        assert_float_eq(finout(t), fin(t*lit::<T>(2.0)) / lit::<T>(2.0));
       } else {
-        assert_relative_eq!(finout(t), fout((t-0.5)*2.0) / 2.0 + 0.5);
+        assert_float_eq(finout(t), fout((t-lit::<T>(0.5))*lit::<T>(2.0)) / lit::<T>(2.0) + lit::<T>(0.5));
       }
     }
   }
