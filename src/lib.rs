@@ -330,4 +330,9 @@ mod tests {
   tests!(elastic);
   tests!(back);
   tests!(bounce);
+  #[test]
+  fn test_linear() {
+    test::<f32, _>(super::linear);
+    test::<f64, _>(super::linear);
+  }
 }
