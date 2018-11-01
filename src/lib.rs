@@ -13,6 +13,12 @@ fn lit<F: Float>(f: f64) -> F {
   F::from(f).unwrap()
 }
 
+// Linear
+
+#[inline]
+pub fn linear<F: Float>(t: F) -> F {
+  t
+}
 
 // Quadratic
 
