@@ -1,6 +1,6 @@
 [package]
 name = "ezing"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Michael Fairley <michaelfairley@gmail.com>"]
 description = "Easing functions"
 repository = "https://github.com/michaelfairley/ezing"
